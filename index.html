@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Cumple 40 Nati - ¡40 Años de ser Increíble!</title>
+  <meta name="description" content="Invitación interactiva al cumple de 40 de Nati - Sábado 24/10 en Quinta Espacio Alvarez" />
+  <meta name="theme-color" content="#0d0d0d" />
+
+  <!-- Open Graph para compartir por WhatsApp -->
+  <meta property="og:title" content="¡Cumple 40 de Nati! 🎉" />
+  <meta property="og:description" content="Sábado 24/10 de 12 a 18 hs - Quinta Espacio Alvarez. Tocá para ver el mapa, confirmar asistencia y subir tus fotos." />
+  <meta property="og:image" content="invitacion.jpg" />
+  <meta property="og:type" content="website" />
+
+  <style>
+    :root {
+      --bg-dark: #0a0a0a;
+      --card-bg: #141414;
+      --green: #299e72;
+      --green-glow: rgba(41, 158, 114, 0.45);
+      --purple: #874b9e;
+      --purple-glow: rgba(135, 75, 158, 0.45);
+      --cream: #dfc79c;
+      --text-light: #f3ece0;
+      --danger: #e74c3c;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .invitation-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      flex: 1;
+      min-height: 0;
+      margin: 0 auto;
+    }
+
+    .invitation-img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    /* Hotspots 100% invisibles sobre la imagen (mantiene el click sin dibujar nada arriba) */
+    .hotspot {
+      position: absolute;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+
+    .hs-calendar {
+      top: 76.2%;
+      left: 8%;
+      width: 84%;
+      height: 8.2%;
+    }
+
+    .hs-map {
+      top: 84.6%;
+      left: 8%;
+      width: 84%;
+      height: 7.4%;
+    }
+
+    .hs-rsvp {
+      top: 92.2%;
+      left: 18%;
+      width: 64%;
+      height: 4.5%;
+    }
+
+    /* Botonera pegada directamente debajo de la imagen (sin espacio vacío) */
+    .bottom-dock {
+      flex-shrink: 0;
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      background: rgba(18, 18, 18, 0.98);
+      border-top: 1px solid rgba(223, 199, 156, 0.25);
+      padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      z-index: 40;
+    }
+
+    .dock-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-light);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 8px 4px;
+      border-radius: 14px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .dock-btn:active {
+      transform: scale(0.95);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .dock-icon {
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+
+    /* Modales */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 100;
+      padding: 0;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal-sheet {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      border-top: 2px solid var(--cream);
+      border-radius: 24px 24px 0 0;
+      padding: 20px 18px 28px;
+      max-height: 92dvh;
+      overflow-y: auto;
+      animation: slide-up 0.22s ease-out;
+    }
+
+    @keyframes slide-up {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .modal-title {
+      font-size: 1.12rem;
+      color: var(--cream);
+      font-weight: 700;
+    }
+
+    .close-btn {
+      background: rgba(255,255,255,0.08);
+      border: none;
+      color: var(--text-light);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    .map-frame {
+      width: 100%;
+      height: 250px;
+      border: 1px solid rgba(223, 199, 156, 0.25);
+      border-radius: 14px;
+      margin-bottom: 14px;
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .btn-green { background: var(--green); color: #fff; }
+    .btn-purple { background: var(--purple); color: #fff; }
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(223, 199, 156, 0.35);
+      color: var(--cream);
+    }
+
+    /* Login de carpeta de invitado */
+    .input-field {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(223, 199, 156, 0.3);
+      background: #0d0d0d;
+      color: var(--text-light);
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+    }
+
+    .guest-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(223, 199, 156, 0.2);
+      padding: 8px 12px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      font-size: 0.84rem;
+    }
+
+    .link-btn {
+      background: none;
+      border: none;
+      color: var(--cream);
+      text-decoration: underline;
+      font-size: 0.78rem;
+      cursor: pointer;
+    }
+
+    /* Subida de archivos */
+    .upload-zone {
+      border: 2px dashed var(--green);
+      background: rgba(41, 158, 114, 0.08);
+      border-radius: 16px;
+      padding: 18px 14px;
+      text-align: center;
+      cursor: pointer;
+      margin: 10px 0;
+      transition: background 0.2s;
+    }
+
+    .upload-zone:active {
+      background: rgba(41, 158, 114, 0.18);
+    }
+
+    .file-list {
+      margin: 8px 0;
+      max-height: 150px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .file-item {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+    }
+
+    .file-item-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--purple), var(--green));
+      transition: width 0.2s;
+    }
+
+    .status-msg {
+      margin-top: 8px;
+      font-size: 0.84rem;
+      text-align: center;
+      min-height: 18px;
+    }
+
+    /* Grilla de "Mis archivos subidos" */
+    .my-files-section {
+      margin-top: 16px;
+      border-top: 1px solid rgba(223, 199, 156, 0.15);
+      padding-top: 14px;
+    }
+
+    .my-files-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      color: var(--cream);
+      font-weight: 600;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .media-card {
+      background: #0d0d0d;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .media-thumb-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .media-thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .media-badge {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      background: rgba(0,0,0,0.75);
+      color: #fff;
+      font-size: 0.68rem;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    .media-info {
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .media-name {
+      font-size: 0.76rem;
+      color: #ddd;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .media-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-light);
+      padding: 6px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .icon-btn.danger {
+      color: #ff7675;
+      border-color: rgba(231, 76, 60, 0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Invitación con Hotspots 100% invisibles arriba de la imagen -->
+  <main class="invitation-wrapper">
+    <img src="invitacion.jpg" alt="Invitación 40 Años Nati" class="invitation-img" />
+
+    <!-- Hotspot: Fecha y Hora -> Agendar -->
+    <div class="hotspot hs-calendar" onclick="openModal('calendarModal')" title="Agendar fecha"></div>
+
+    <!-- Hotspot: Dirección -> Mapa -->
+    <div class="hotspot hs-map" onclick="openModal('mapModal')" title="Ver ubicación en el mapa"></div>
+
+    <!-- Hotspot: Confirmar Invitación -->
+    <div class="hotspot hs-rsvp" onclick="confirmarWhatsApp()" title="Confirmar asistencia"></div>
+  </main>
+
+  <!-- Botonera pegada debajo de la imagen -->
+  <nav class="bottom-dock">
+    <button class="dock-btn" onclick="openModal('calendarModal')">
+      <span class="dock-icon">📅</span>
+      <span>Agendar</span>
+    </button>
+    <button class="dock-btn" onclick="openModal('mapModal')">
+      <span class="dock-icon">📍</span>
+      <span>Ubicación</span>
+    </button>
+    <button class="dock-btn" onclick="confirmarWhatsApp()">
+      <span class="dock-icon">💬</span>
+      <span>Confirmar</span>
+    </button>
+    <button class="dock-btn" onclick="openUploadModal()">
+      <span class="dock-icon">📸</span>
+      <span>Mis Fotos</span>
+    </button>
+  </nav>
+
+  <!-- MODAL 1: UBICACIÓN / MAPA -->
+  <div class="modal-backdrop" id="mapModal" onclick="closeOnBackdrop(event, 'mapModal')">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3 class="modal-title">📍 Quinta Espacio Alvarez</h3>
+        <button class="close-btn" onclick="closeModal('mapModal')">✕</button>
+      </div>
+      <p style="font-size: 0.9rem; color: #ccc; margin-bottom: 12px;">
+        Alcorta 531, Francisco Álvarez (Km 44), Buenos Aires.<br/>
+        <small style="color: var(--cream);">A 7 cuadras de la bajada de Acceso Oeste.</small>
+      </p>
+      <iframe
+        class="map-frame"
+        loading="lazy"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"
+        src="https://www.google.com/maps?q=Alcorta+531,+Francisco+Alvarez,+Buenos+Aires,+Argentina&output=embed">
+      </iframe>
+      <div class="action-grid">
+        <a class="btn btn-green" href="https://www.google.com/maps/search/?api=1&query=Alcorta+531+Francisco+Alvarez+Buenos+Aires" target="_blank" rel="noopener">
+          🗺️ Google Maps
+        </a>
+        <a class="btn btn-purple" href="https://waze.com/ul?q=Alcorta%20531%20Francisco%20Alvarez%20Buenos%20Aires&navigate=yes" target="_blank" rel="noopener">
+          🚗 Abrir Waze
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: SUBCARPETA PRIVADA DEL INVITADO (SUBIR, VER, EDITAR Y BORRAR LO PROPIO) -->
+  <div class="modal-backdrop" id="uploadModal" onclick="closeOnBackdrop(event, 'uploadModal')">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3 class="modal-title">📸 Tu Carpeta del Cumple</h3>
+        <button class="close-btn" onclick="closeModal('uploadModal')">✕</button>
+      </div>
+
+      <!-- PASO 1: Identificación rápida del invitado (Nombre + PIN) -->
+      <div id="guestLoginView">
+        <p style="font-size: 0.86rem; color: #ccc; margin-bottom: 12px;">
+          Ingresá tu nombre y un PIN de 4 números. Se creará <strong>tu propia carpeta privada</strong> para que puedas subir fotos/videos y ver, editar o borrar solo lo que vos subas.
+        </p>
+        <input type="text" id="loginName" class="input-field" placeholder="Tu Nombre y Apellido (ej: Juan Perez)" />
+        <input type="password" inputmode="numeric" maxlength="8" id="loginPin" class="input-field" placeholder="Elegí un PIN de 4 dígitos (ej: 1234)" />
+        <button class="btn btn-green" style="width: 100%;" onclick="saveGuestSession()">
+          🔓 Entrar a mi carpeta
+        </button>
+      </div>
+
+      <!-- PASO 2: Carpeta activa del invitado -->
+      <div id="guestFolderView" style="display: none;">
+        <div class="guest-bar">
+          <span>📂 Carpeta de <strong id="activeGuestName" style="color: var(--cream);"></strong></span>
+          <button class="link-btn" onclick="logoutGuest()">Cambiar usuario</button>
+        </div>
+
+        <input
+          type="file"
+          id="fileInput"
+          multiple
+          accept="image/*,video/*"
+          style="display: none"
+          onchange="handleFileSelect(event)"
+        />
+
+        <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+          <div style="font-size: 1.8rem; margin-bottom: 4px;">📲</div>
+          <div style="font-weight: 700; color: var(--cream);">Tocá para agregar fotos o videos</div>
+          <div style="font-size: 0.76rem; color: #aaa; margin-top: 2px;">Podés elegir varios a la vez (máx. 100 MB por archivo)</div>
+        </div>
+
+        <div id="fileList" class="file-list"></div>
+
+        <button id="uploadBtn" class="btn btn-green" style="width: 100%; display: none;" onclick="startUpload()">
+          ⬆️ Subir a mi carpeta
+        </button>
+
+        <div id="uploadStatus" class="status-msg"></div>
+
+        <!-- Galería personal del invitado -->
+        <div class="my-files-section">
+          <div class="my-files-header">
+            <span>Mis archivos subidos (<span id="myFilesCount">0</span>)</span>
+            <button class="link-btn" onclick="loadMyFiles()">🔄 Actualizar</button>
+          </div>
+          <div id="myFilesLoading" style="font-size: 0.82rem; color: #aaa; text-align: center; padding: 12px; display: none;">
+            Cargando tu carpeta...
+          </div>
+          <div id="myFilesGrid" class="gallery-grid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: AGENDAR EVENTO -->
+  <div class="modal-backdrop" id="calendarModal" onclick="closeOnBackdrop(event, 'calendarModal')">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3 class="modal-title">📅 Sábado 24 de Octubre</h3>
+        <button class="close-btn" onclick="closeModal('calendarModal')">✕</button>
+      </div>
+      <p style="font-size: 0.9rem; color: #ccc; margin-bottom: 14px;">
+        Horario: <strong>12:00 hs a 18:00 hs</strong><br/>
+        Lugar: <strong>Quinta Espacio Alvarez</strong> (Alcorta 531, Francisco Álvarez)
+      </p>
+      <div class="action-grid">
+        <a
+          class="btn btn-green"
+          href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Cumple+40+Nati&dates=20261024T150000Z/20261024T210000Z&details=Cumplea%C3%B1os+de+40+de+Nati.+%C2%A1No+faltes!&location=Alcorta+531,+Francisco+Alvarez,+Buenos+Aires"
+          target="_blank"
+          rel="noopener"
+        >
+          📆 Google Calendar
+        </a>
+        <button class="btn btn-outline" onclick="downloadICS()">
+          🍏 Apple / Outlook
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // CONFIGURACIÓN
+    // =========================================================================
+    const CONFIG = {
+      // URL del Web App de Google Apps Script
+      APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbxjKStqipxdD_Sx5W6G6jkCteqjyhCmX9wKGq0_BKKbe_uuPS_k9JwLo7jclhroaiJX/exec",
+      // Número de WhatsApp para confirmar asistencia (formato internacional sin +)
+      WHATSAPP_NUMBER: "5491161019296",
+      WHATSAPP_TEXT: "¡Hola Nati! Confirmo mi asistencia a tus 40 🎉🥂"
+    };
+
+    const STORAGE_KEY = "cumple40Nati_guest";
+    let selectedFiles = [];
+
+    // Modales
+    function openModal(id) {
+      document.getElementById(id).classList.add("active");
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove("active");
+    }
+    function closeOnBackdrop(e, id) {
+      if (e.target.id === id) closeModal(id);
+    }
+
+    function openUploadModal() {
+      openModal("uploadModal");
+      renderGuestSession();
+    }
+
+    // Sesión del invitado (Nombre + PIN guardados en su celular)
+    function getGuestSession() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function saveGuestSession() {
+      const name = document.getElementById("loginName").value.trim();
+      const pin = document.getElementById("loginPin").value.trim();
+
+      if (name.length < 2) {
+        alert("Por favor ingresá tu nombre.");
+        return;
+      }
+      if (pin.length < 3) {
+        alert("Por favor ingresá un PIN de al menos 3 o 4 dígitos para proteger tu carpeta.");
+        return;
+      }
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ name, pin }));
+      renderGuestSession();
+    }
+
+    function logoutGuest() {
+      localStorage.removeItem(STORAGE_KEY);
+      document.getElementById("myFilesGrid").innerHTML = "";
+      renderGuestSession();
+    }
+
+    function renderGuestSession() {
+      const session = getGuestSession();
+      const loginView = document.getElementById("guestLoginView");
+      const folderView = document.getElementById("guestFolderView");
+
+      if (!session) {
+        loginView.style.display = "block";
+        folderView.style.display = "none";
+      } else {
+        loginView.style.display = "none";
+        folderView.style.display = "block";
+        document.getElementById("activeGuestName").textContent = session.name;
+        loadMyFiles();
+      }
+    }
+
+    // Confirmación por WhatsApp
+    function confirmarWhatsApp() {
+      const url = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(CONFIG.WHATSAPP_TEXT)}`;
+      window.open(url, "_blank", "noopener");
+    }
+
+    // Descarga de archivo .ics
+    function downloadICS() {
+      const icsContent = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "BEGIN:VEVENT",
+        "DTSTART:20261024T150000Z",
+        "DTEND:20261024T210000Z",
+        "SUMMARY:Cumple 40 Nati 🎉",
+        "DESCRIPTION:¡40 años de ser increíble! No faltes.",
+        "LOCATION:Quinta Espacio Alvarez - Alcorta 531\\, Francisco Alvarez\\, Buenos Aires",
+        "END:VEVENT",
+        "END:VCALENDAR"
+      ].join("\r\n");
+
+      const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "cumple-40-nati.ics";
+      link.click();
+    }
+
+    // =========================================================================
+    // API CLIENT -> GOOGLE APPS SCRIPT (Subcarpeta propia por invitado)
+    // =========================================================================
+    async function apiCall(payload) {
+      if (CONFIG.APPS_SCRIPT_URL.startsWith("REEMPLAZAR")) {
+        throw new Error("Falta configurar APPS_SCRIPT_URL en index.html");
+      }
+      const session = getGuestSession();
+      const res = await fetch(CONFIG.APPS_SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          ...payload,
+          guestName: session.name,
+          guestPin: session.pin
+        })
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || "Error en el servidor");
+      return data;
+    }
+
+    // Listar únicamente los archivos de la subcarpeta del invitado
+    async function loadMyFiles() {
+      const loadingEl = document.getElementById("myFilesLoading");
+      const gridEl = document.getElementById("myFilesGrid");
+      const countEl = document.getElementById("myFilesCount");
+
+      loadingEl.style.display = "block";
+      try {
+        const data = await apiCall({ action: "listFiles" });
+        const files = data.files || [];
+        countEl.textContent = files.length;
+        gridEl.innerHTML = "";
+
+        if (files.length === 0) {
+          gridEl.innerHTML = `<div style="grid-column: 1 / -1; text-align:center; color:#888; font-size:0.82rem; padding: 14px;">Todavía no subiste fotos ni videos a tu carpeta.</div>`;
+        } else {
+          files.forEach((f) => {
+            const card = document.createElement("div");
+            card.className = "media-card";
+            card.innerHTML = `
+              <a href="${f.viewUrl}" target="_blank" rel="noopener" class="media-thumb-wrap" title="Ver archivo">
+                <img src="${f.thumbUrl}" alt="${f.name}" class="media-thumb" loading="lazy" onerror="this.style.display='none'" />
+                <span class="media-badge">${f.isVideo ? "🎥 Video" : "📷 Foto"} · ${f.sizeMB}M</span>
+              </a>
+              <div class="media-info">
+                <div class="media-name" id="name-${f.id}" title="${f.name}">${f.name}</div>
+                <div class="media-actions">
+                  <button class="icon-btn" onclick="renameMyFile('${f.id}', '${f.name.replace(/'/g, "\\'")}')">✏️ Editar</button>
+                  <button class="icon-btn danger" onclick="deleteMyFile('${f.id}', '${f.name.replace(/'/g, "\\'")}')">🗑️ Borrar</button>
+                </div>
+              </div>
+            `;
+            gridEl.appendChild(card);
+          });
+        }
+      } catch (err) {
+        console.error(err);
+        gridEl.innerHTML = `<div style="grid-column: 1 / -1; text-align:center; color:#e67e22; font-size:0.8rem;">${err.message}</div>`;
+      } finally {
+        loadingEl.style.display = "none";
+      }
+    }
+
+    async function renameMyFile(fileId, currentName) {
+      const newName = prompt("Nuevo nombre para tu archivo:", currentName);
+      if (!newName || newName.trim() === currentName) return;
+
+      try {
+        await apiCall({
+          action: "renameFile",
+          fileId: fileId,
+          newName: newName.trim()
+        });
+        await loadMyFiles();
+      } catch (err) {
+        alert("No se pudo renombrar: " + err.message);
+      }
+    }
+
+    async function deleteMyFile(fileId, fileName) {
+      if (!confirm(`¿Seguro que querés eliminar "${fileName}" de tu carpeta?`)) return;
+
+      try {
+        await apiCall({
+          action: "deleteFile",
+          fileId: fileId
+        });
+        await loadMyFiles();
+      } catch (err) {
+        alert("No se pudo eliminar: " + err.message);
+      }
+    }
+
+    const MAX_FILE_SIZE_MB = 100;
+    const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
+    // Selección y subida de archivos
+    function handleFileSelect(event) {
+      const allFiles = Array.from(event.target.files);
+      const listEl = document.getElementById("fileList");
+      const btnEl = document.getElementById("uploadBtn");
+      const statusEl = document.getElementById("uploadStatus");
+
+      listEl.innerHTML = "";
+      statusEl.innerHTML = "";
+
+      const oversized = allFiles.filter((f) => f.size > MAX_FILE_SIZE_BYTES);
+      selectedFiles = allFiles.filter((f) => f.size <= MAX_FILE_SIZE_BYTES);
+
+      if (oversized.length > 0) {
+        const names = oversized.map((f) => `${f.name} (${(f.size / (1024 * 1024)).toFixed(1)} MB)`).join(", ");
+        statusEl.style.color = "#e74c3c";
+        statusEl.textContent = `⚠️ Se omitieron por superar los ${MAX_FILE_SIZE_MB} MB: ${names}`;
+      }
+
+      if (selectedFiles.length === 0) {
+        btnEl.style.display = "none";
+        return;
+      }
+
+      selectedFiles.forEach((file, idx) => {
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+        const item = document.createElement("div");
+        item.className = "file-item";
+        item.innerHTML = `
+          <div class="file-item-header">
+            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:70%;">${file.name}</span>
+            <span id="status-${idx}">${sizeMB} MB</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="prog-${idx}"></div>
+          </div>
+        `;
+        listEl.appendChild(item);
+      });
+
+      btnEl.style.display = "inline-flex";
+    }
+
+    async function startUpload() {
+      const btnEl = document.getElementById("uploadBtn");
+      const statusEl = document.getElementById("uploadStatus");
+
+      btnEl.disabled = true;
+      statusEl.style.color = "var(--cream)";
+      statusEl.textContent = "Subiendo a tu carpeta, no cierres esta ventana...";
+
+      let okCount = 0;
+
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        const progEl = document.getElementById(`prog-${i}`);
+        const itemStatusEl = document.getElementById(`status-${i}`);
+
+        try {
+          itemStatusEl.textContent = "Subiendo...";
+          if (file.size <= 20 * 1024 * 1024) {
+            await uploadBase64(file, progEl);
+          } else {
+            await uploadResumable(file, progEl);
+          }
+          progEl.style.width = "100%";
+          itemStatusEl.textContent = "✅ Subido";
+          okCount++;
+        } catch (err) {
+          console.error(err);
+          itemStatusEl.textContent = "❌ Error";
+          progEl.style.background = "#e74c3c";
+        }
+      }
+
+      btnEl.disabled = false;
+      if (okCount === selectedFiles.length) {
+        statusEl.style.color = "#2ecc71";
+        statusEl.textContent = `¡Listo! Se subieron ${okCount} archivo(s) a tu carpeta 🎉`;
+        btnEl.style.display = "none";
+        document.getElementById("fileList").innerHTML = "";
+        selectedFiles = [];
+      } else {
+        statusEl.style.color = "#f39c12";
+        statusEl.textContent = `Se subieron ${okCount} de ${selectedFiles.length} archivos.`;
+      }
+
+      await loadMyFiles();
+    }
+
+    function fileToBase64(file, onProgress) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onprogress = (e) => {
+          if (e.lengthComputable && onProgress) {
+            onProgress(Math.round((e.loaded / e.total) * 40));
+          }
+        };
+        reader.onload = () => resolve(reader.result.split(",")[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function uploadBase64(file, progEl) {
+      const base64Data = await fileToBase64(file, (p) => {
+        progEl.style.width = `${p}%`;
+      });
+      progEl.style.width = "65%";
+
+      await apiCall({
+        action: "uploadBase64",
+        fileName: file.name,
+        mimeType: file.type || "application/octet-stream",
+        data: base64Data
+      });
+    }
+
+    async function uploadResumable(file, progEl) {
+      const initData = await apiCall({
+        action: "initResumable",
+        fileName: file.name,
+        mimeType: file.type || "video/mp4",
+        fileSize: file.size,
+        origin: window.location.origin
+      });
+
+      await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("PUT", initData.uploadUrl, true);
+        xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) {
+            progEl.style.width = `${Math.round((e.loaded / e.total) * 100)}%`;
+          }
+        };
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) resolve();
+          else reject(new Error(`HTTP ${xhr.status}`));
+        };
+        xhr.onerror = () => reject(new Error("Fallo de red subiendo video"));
+        xhr.send(file);
+      });
+    }
+  </script>
+</body>
+</html>
