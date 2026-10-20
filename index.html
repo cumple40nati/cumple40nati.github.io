@@ -48,8 +48,10 @@
       justify-content: space-between;
     }
 
-    .invitation-wrapper {
+    .invitation-wrapper,
+    .invitacion-wrapper {
       position: relative;
+      overflow: hidden;
       width: 100%;
       max-width: 480px;
       flex: 1;
@@ -57,16 +59,184 @@
       margin: 0 auto;
     }
 
-    .invitation-img {
+    .invitation-img,
+    .imagen-fondo {
       display: block;
       width: 100%;
       height: 100%;
       object-fit: fill;
+      filter: saturate(1.15) contrast(1.05);
       user-select: none;
       -webkit-user-drag: none;
     }
 
-    /* Hotspots 100% invisibles sobre la imagen (mantiene el click sin dibujar nada arriba) */
+    /* =========================================================================
+       A. REALCE CSS E ILUMINACIÓN NEÓN (mix-blend-mode: color-dodge)
+       ========================================================================= */
+    .glow-sol {
+      position: absolute;
+      pointer-events: none;
+      top: 6%;
+      left: 15%;
+      width: 70%;
+      height: 30%;
+      background: radial-gradient(circle, rgba(0, 255, 170, 0.35) 0%, rgba(180, 50, 255, 0.25) 50%, transparent 70%);
+      mix-blend-mode: color-dodge;
+      animation: pulsoSol 3.5s infinite alternate ease-in-out;
+    }
+
+    @keyframes pulsoSol {
+      0% { transform: scale(0.95); opacity: 0.4; }
+      100% { transform: scale(1.05); opacity: 0.95; }
+    }
+
+    .glow-40 {
+      position: absolute;
+      pointer-events: none;
+      top: 42%;
+      left: 25%;
+      width: 50%;
+      height: 22%;
+      background: linear-gradient(90deg, rgba(190, 60, 255, 0.4) 0%, rgba(0, 255, 160, 0.4) 100%);
+      filter: blur(25px);
+      mix-blend-mode: color-dodge;
+      animation: pulso40 2.5s infinite alternate-reverse ease-in-out;
+    }
+
+    @keyframes pulso40 {
+      0% { transform: scale(0.94); opacity: 0.45; }
+      100% { transform: scale(1.06); opacity: 0.95; }
+    }
+
+    .destello-esquina-izq,
+    .destello-esquina-der {
+      position: absolute;
+      pointer-events: none;
+      top: 2.5%;
+      width: 12%;
+      height: 10%;
+      background: conic-gradient(from 0deg, #00ffaa, #b833ff, #f5d7a1);
+      filter: blur(12px);
+      mix-blend-mode: color-dodge;
+      animation: cartelNeon 1.5s infinite steps(3);
+    }
+
+    .destello-esquina-izq { left: 6%; }
+    .destello-esquina-der { right: 5%; animation-delay: 0.5s; }
+
+    @keyframes cartelNeon {
+      0%, 100% { opacity: 0.25; transform: scale(0.95); }
+      50% { opacity: 0.9; transform: scale(1.05); }
+    }
+
+    /* =========================================================================
+       B. ANIMACIONES DE ELEMENTOS DEL DISEÑO
+       ========================================================================= */
+    .destello {
+      position: absolute;
+      pointer-events: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 10px 3px #00ffaa, 0 0 20px 6px #b833ff;
+      transform: translate(-50%, -50%);
+      animation: brillarEstrella 2.2s infinite ease-in-out alternate;
+    }
+
+    .destello.estrella-izq { top: 16.5%; left: 13%; animation-delay: 0s; }
+    .destello.estrella-der { top: 16.5%; left: 86%; animation-delay: 0.8s; }
+    .destello.brindis { top: 87%; left: 87%; animation-delay: 1.5s; }
+
+    @keyframes brillarEstrella {
+      0% { transform: translate(-50%, -50%) scale(0.35); opacity: 0.25; }
+      100% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+    }
+
+    .anim-copas {
+      position: absolute;
+      pointer-events: none;
+      top: 86%;
+      left: 79%;
+      width: 15%;
+      height: 11%;
+    }
+
+    .anim-copas .burbuja {
+      position: absolute;
+      bottom: 35%;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      opacity: 0;
+      animation: subirBurbuja 2.6s infinite ease-in;
+    }
+
+    .anim-copas .burbuja.b1 { left: 22%; background: #00ffaa; box-shadow: 0 0 6px #00ffaa; animation-delay: 0s; }
+    .anim-copas .burbuja.b2 { left: 34%; background: #00ffaa; box-shadow: 0 0 6px #00ffaa; animation-delay: 1.1s; }
+    .anim-copas .burbuja.b3 { left: 66%; background: #d455ff; box-shadow: 0 0 6px #d455ff; animation-delay: 0.5s; }
+    .anim-copas .burbuja.b4 { left: 78%; background: #d455ff; box-shadow: 0 0 6px #d455ff; animation-delay: 1.7s; }
+
+    @keyframes subirBurbuja {
+      0% { transform: translateY(0) scale(0.7); opacity: 0; }
+      35% { opacity: 0.9; }
+      100% { transform: translateY(-35px) scale(1.15); opacity: 0; }
+    }
+
+    .anim-copas .chin-chin {
+      position: absolute;
+      top: 5%;
+      left: 42%;
+      color: #f5d7a1;
+      font-size: 0.95rem;
+      text-shadow: 0 0 8px #f5d7a1, 0 0 14px #00ffaa;
+      animation: choqueCopas 2s infinite ease-in-out;
+    }
+
+    @keyframes choqueCopas {
+      0%, 100% { transform: scale(0.6) rotate(0deg); opacity: 0.3; }
+      50% { transform: scale(1.35) rotate(45deg); opacity: 1; }
+    }
+
+    .radar-pin {
+      position: absolute;
+      pointer-events: none;
+      top: 85.2%;
+      left: 10.8%;
+      width: 5.5%;
+      aspect-ratio: 1;
+      border: 2px solid #00ffaa;
+      border-radius: 50%;
+      animation: ondaRadar 2s infinite ease-out;
+    }
+
+    @keyframes ondaRadar {
+      0% { transform: scale(0.5); opacity: 1; }
+      100% { transform: scale(2.4); opacity: 0; }
+    }
+
+    .pulso-calendario {
+      position: absolute;
+      pointer-events: none;
+      top: 78.5%;
+      left: 13.5%;
+      width: 4.5%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(245, 215, 161, 0.7) 0%, transparent 70%);
+      mix-blend-mode: color-dodge;
+      animation: latidoCorazon 1.2s infinite ease-in-out;
+    }
+
+    @keyframes latidoCorazon {
+      0%, 100% { transform: scale(0.85); opacity: 0.45; }
+      30% { transform: scale(1.35); opacity: 1; }
+      60% { transform: scale(0.95); opacity: 0.65; }
+    }
+
+    /* =========================================================================
+       C. HOTSPOTS INTERACTIVOS Y EFECTO SHIMMER
+       ========================================================================= */
     .hotspot {
       position: absolute;
       cursor: pointer;
@@ -90,10 +260,30 @@
     }
 
     .hs-rsvp {
-      top: 92.2%;
-      left: 18%;
-      width: 64%;
-      height: 4.5%;
+      top: 92.3%;
+      left: 24%;
+      width: 52%;
+      height: 3.2%;
+      overflow: hidden;
+      border-radius: 4px;
+    }
+
+    .hs-rsvp::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -120%;
+      width: 65%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transform: skewX(-25deg);
+      animation: shimmerSweep 3.5s infinite ease-in-out;
+      pointer-events: none;
+    }
+
+    @keyframes shimmerSweep {
+      0% { left: -120%; }
+      45%, 100% { left: 160%; }
     }
 
     /* Botonera pegada directamente debajo de la imagen (sin espacio vacío) */
@@ -430,17 +620,40 @@
 </head>
 <body>
 
-  <!-- Invitación con Hotspots 100% invisibles arriba de la imagen -->
-  <main class="invitation-wrapper">
-    <img src="invitacion.jpg" alt="Invitación 40 Años Nati" class="invitation-img" />
+  <!-- Invitación con Capas de Iluminación Neón y Hotspots -->
+  <main class="invitation-wrapper invitacion-wrapper">
+    <img src="invitacion.jpg" alt="Invitación 40 Años Nati" class="invitation-img imagen-fondo" />
 
+    <!-- A. Capas de iluminación neón (color-dodge) -->
+    <div class="glow-sol"></div>
+    <div class="glow-40"></div>
+    <div class="destello-esquina-izq"></div>
+    <div class="destello-esquina-der"></div>
+
+    <!-- B. Animaciones puntuales sobre el diseño -->
+    <div class="destello estrella-izq"></div>
+    <div class="destello estrella-der"></div>
+    <div class="destello brindis"></div>
+
+    <div class="anim-copas">
+      <span class="burbuja b1"></span>
+      <span class="burbuja b2"></span>
+      <span class="burbuja b3"></span>
+      <span class="burbuja b4"></span>
+      <span class="chin-chin">✦</span>
+    </div>
+
+    <div class="radar-pin"></div>
+    <div class="pulso-calendario"></div>
+
+    <!-- C. Hotspots interactivos -->
     <!-- Hotspot: Fecha y Hora -> Agendar -->
     <div class="hotspot hs-calendar" onclick="openModal('calendarModal')" title="Agendar fecha"></div>
 
     <!-- Hotspot: Dirección -> Mapa -->
     <div class="hotspot hs-map" onclick="openModal('mapModal')" title="Ver ubicación en el mapa"></div>
 
-    <!-- Hotspot: Confirmar Invitación -->
+    <!-- Hotspot: Confirmar Invitación (con barrido de luz shimmer) -->
     <div class="hotspot hs-rsvp" onclick="confirmarWhatsApp()" title="Confirmar asistencia"></div>
   </main>
 
@@ -935,6 +1148,19 @@
         xhr.send(file);
       });
     }
+
+    // D. Confetti inicial con la paleta del sitio
+    window.addEventListener("load", () => {
+      if (typeof confetti === "function") {
+        confetti({
+          particleCount: 50,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ["#00e699", "#a64dff", "#f3d2a2"]
+        });
+      }
+    });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
 </body>
 </html>
