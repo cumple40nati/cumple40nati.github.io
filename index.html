@@ -83,20 +83,20 @@
       border-radius: 50% 50% 12% 12%;
       background: linear-gradient(
         180deg,
-        rgba(0, 255, 170, 0) 0%,
-        rgba(0, 255, 170, 0.65) 35%,
-        rgba(212, 85, 255, 0.75) 65%,
-        rgba(212, 85, 255, 0) 100%
+        rgba(0, 230, 153, 0) 0%,
+        rgba(0, 230, 153, 0.42) 35%,
+        rgba(175, 65, 235, 0.48) 65%,
+        rgba(175, 65, 235, 0) 100%
       );
       background-size: 100% 220%;
-      filter: blur(14px);
+      filter: blur(16px);
       mix-blend-mode: screen;
-      animation: ondaSol 3s infinite alternate ease-in-out;
+      animation: ondaSol 3.2s infinite alternate ease-in-out;
     }
 
     @keyframes ondaSol {
-      0% { background-position: 0% 0%; transform: scale(0.98); opacity: 0.65; }
-      100% { background-position: 0% 100%; transform: scale(1.03); opacity: 1; }
+      0% { background-position: 0% 0%; transform: scale(0.98); opacity: 0.32; }
+      100% { background-position: 0% 100%; transform: scale(1.02); opacity: 0.62; }
     }
 
     .glow-40 {
@@ -109,11 +109,11 @@
       overflow: hidden;
       border-radius: 12px;
       background:
-        radial-gradient(circle at 28% 55%, rgba(215, 70, 255, 0.85) 0%, rgba(215, 70, 255, 0.3) 35%, transparent 65%),
-        radial-gradient(circle at 74% 55%, rgba(0, 255, 170, 0.85) 0%, rgba(0, 255, 170, 0.3) 35%, transparent 65%);
+        radial-gradient(circle at 28% 55%, rgba(185, 55, 240, 0.52) 0%, rgba(185, 55, 240, 0.2) 38%, transparent 65%),
+        radial-gradient(circle at 74% 55%, rgba(0, 230, 153, 0.52) 0%, rgba(0, 230, 153, 0.2) 38%, transparent 65%);
       filter: blur(16px);
       mix-blend-mode: screen;
-      animation: neon40Alternado 1.6s infinite alternate ease-in-out;
+      animation: neon40Alternado 1.8s infinite alternate ease-in-out;
     }
 
     .glow-40::after {
@@ -121,24 +121,24 @@
       position: absolute;
       top: -20%;
       left: -130%;
-      width: 60%;
+      width: 55%;
       height: 140%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+      background: linear-gradient(90deg, transparent, rgba(243, 210, 162, 0.28), transparent);
       transform: skewX(-25deg);
-      mix-blend-mode: overlay;
-      animation: barrido40 2.8s infinite ease-in-out;
+      mix-blend-mode: screen;
+      animation: barrido40 3.2s infinite ease-in-out;
     }
 
     @keyframes neon40Alternado {
       0% {
-        transform: scale(0.95) translateX(-4px);
-        filter: blur(14px) hue-rotate(-10deg) brightness(1.1);
-        opacity: 0.6;
+        transform: scale(0.96) translateX(-3px);
+        filter: blur(15px) hue-rotate(-8deg);
+        opacity: 0.35;
       }
       100% {
-        transform: scale(1.06) translateX(4px);
-        filter: blur(18px) hue-rotate(15deg) brightness(1.4);
-        opacity: 1;
+        transform: scale(1.03) translateX(3px);
+        filter: blur(18px) hue-rotate(10deg);
+        opacity: 0.65;
       }
     }
 
@@ -155,18 +155,18 @@
       width: 70%;
       height: 20%;
       background:
-        radial-gradient(ellipse at 50% 10%, rgba(200, 70, 255, 0.55) 0%, transparent 60%),
-        radial-gradient(ellipse at 50% 45%, rgba(0, 255, 170, 0.5) 0%, transparent 55%),
-        radial-gradient(ellipse at 35% 85%, rgba(200, 70, 255, 0.5) 0%, transparent 50%),
-        radial-gradient(ellipse at 68% 85%, rgba(200, 70, 255, 0.5) 0%, transparent 50%);
-      filter: blur(15px);
+        radial-gradient(ellipse at 50% 10%, rgba(185, 55, 240, 0.38) 0%, transparent 60%),
+        radial-gradient(ellipse at 50% 45%, rgba(0, 230, 153, 0.35) 0%, transparent 55%),
+        radial-gradient(ellipse at 35% 85%, rgba(185, 55, 240, 0.35) 0%, transparent 50%),
+        radial-gradient(ellipse at 68% 85%, rgba(185, 55, 240, 0.35) 0%, transparent 50%);
+      filter: blur(16px);
       mix-blend-mode: screen;
       animation: pulsoInfo 2.8s infinite alternate ease-in-out;
     }
 
     @keyframes pulsoInfo {
-      0% { opacity: 0.35; transform: translateY(-2px); }
-      100% { opacity: 0.85; transform: translateY(2px); }
+      0% { opacity: 0.22; transform: translateY(-2px); }
+      100% { opacity: 0.52; transform: translateY(2px); }
     }
 
     .destello-esquina-izq,
@@ -176,8 +176,8 @@
       top: 2.5%;
       width: 12%;
       height: 10%;
-      background: conic-gradient(from 0deg, #00ffaa, #b833ff, #f5d7a1);
-      filter: blur(12px);
+      background: conic-gradient(from 0deg, #00e699, #a64dff, #f3d2a2);
+      filter: blur(14px);
       mix-blend-mode: screen;
       animation: cartelNeon 1.5s infinite steps(3);
     }
@@ -186,8 +186,8 @@
     .destello-esquina-der { right: 5%; animation-delay: 0.5s; }
 
     @keyframes cartelNeon {
-      0%, 100% { opacity: 0.25; transform: scale(0.95); }
-      50% { opacity: 0.9; transform: scale(1.05); }
+      0%, 100% { opacity: 0.18; transform: scale(0.95); }
+      50% { opacity: 0.55; transform: scale(1.03); }
     }
 
     /* =========================================================================
