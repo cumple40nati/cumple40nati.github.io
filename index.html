@@ -520,42 +520,58 @@
       max-height: 100dvh;
       border-radius: 0;
       border-top: none;
-      padding: 16px 14px calc(14px + env(safe-area-inset-bottom, 0px));
+      padding: 16px 14px calc(16px + env(safe-area-inset-bottom, 0px));
       display: flex;
       flex-direction: column;
+      position: relative;
     }
 
-    .modal-toolbar {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .toolbar-btn {
+    .close-btn-lg {
       background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(223, 199, 156, 0.3);
-      color: var(--cream);
-      padding: 6px 10px;
-      border-radius: 10px;
-      font-size: 0.82rem;
-      font-weight: 600;
+      border: 1px solid rgba(223, 199, 156, 0.35);
+      color: var(--text-light);
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      font-size: 1.35rem;
       cursor: pointer;
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 4px;
+      justify-content: center;
       transition: background 0.15s, transform 0.1s;
     }
 
-    .toolbar-btn:active {
-      transform: scale(0.95);
+    .close-btn-lg:active {
+      transform: scale(0.92);
       background: rgba(255, 255, 255, 0.18);
     }
 
-    .toolbar-btn.primary {
-      background: var(--green);
-      color: #fff;
-      border-color: var(--green);
-      box-shadow: 0 2px 8px rgba(41, 158, 114, 0.35);
+    /* Botón flotante redondo para agregar fotos */
+    .fab-add-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 20px;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--green), #00e699);
+      border: 2px solid rgba(223, 199, 156, 0.5);
+      color: #0a0a0a;
+      font-size: 2.3rem;
+      font-weight: 300;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 18px rgba(0, 230, 153, 0.55), 0 0 14px rgba(135, 75, 158, 0.45);
+      cursor: pointer;
+      z-index: 50;
+      transition: transform 0.15s, box-shadow 0.2s;
+    }
+
+    .fab-add-btn:active {
+      transform: scale(0.92);
+      box-shadow: 0 2px 10px rgba(0, 230, 153, 0.4);
     }
 
     #guestFolderView {
@@ -563,6 +579,7 @@
       display: flex;
       flex-direction: column;
       min-height: 0;
+      position: relative;
     }
 
     .file-list {
@@ -611,25 +628,13 @@
       min-height: 18px;
     }
 
-    /* Grilla de "Mis archivos subidos" */
+    /* Grilla de fotos con foco completo y sin estiramiento vertical */
     .my-files-section {
       flex: 1;
       display: flex;
       flex-direction: column;
       min-height: 0;
-      margin-top: 4px;
-      padding-top: 0;
-      border-top: none;
-    }
-
-    .my-files-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      font-size: 0.88rem;
-      color: var(--cream);
-      font-weight: 600;
+      margin-top: 6px;
     }
 
     .gallery-grid {
@@ -637,18 +642,28 @@
       overflow-y: auto;
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      padding-bottom: 16px;
+      gap: 12px;
+      align-content: start;
+      align-items: start;
+      padding-bottom: 90px;
       -webkit-overflow-scrolling: touch;
     }
 
+    /* Tarjeta de foto con Glow Neon */
     .media-card {
-      background: #0d0d0d;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
+      position: relative;
+      background: #141414;
+      border: 1.5px solid rgba(0, 230, 153, 0.4);
+      border-radius: 14px;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      box-shadow: 0 0 14px rgba(0, 230, 153, 0.25), 0 0 24px rgba(135, 75, 158, 0.2);
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+
+    .media-card:active {
+      transform: scale(0.98);
+      box-shadow: 0 0 22px rgba(0, 230, 153, 0.45), 0 0 32px rgba(135, 75, 158, 0.35);
+      border-color: rgba(0, 230, 153, 0.8);
     }
 
     .media-thumb-wrap {
@@ -666,53 +681,59 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      display: block;
     }
 
-    .media-badge {
+    .video-badge {
       position: absolute;
-      top: 6px;
-      left: 6px;
-      background: rgba(0,0,0,0.75);
-      color: #fff;
-      font-size: 0.68rem;
-      padding: 2px 6px;
-      border-radius: 6px;
-    }
-
-    .media-info {
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .media-name {
-      font-size: 0.76rem;
-      color: #ddd;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .media-actions {
-      display: flex;
-      gap: 6px;
-    }
-
-    .icon-btn {
-      flex: 1;
-      background: rgba(255, 255, 255, 0.07);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: var(--text-light);
-      padding: 6px;
+      top: 8px;
+      left: 8px;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 8px;
-      font-size: 0.75rem;
-      cursor: pointer;
+      padding: 3px 6px;
+      font-size: 0.82rem;
+      pointer-events: none;
     }
 
-    .icon-btn.danger {
-      color: #ff7675;
-      border-color: rgba(231, 76, 60, 0.3);
+    /* Botones transparentes directamente sobre la foto */
+    .card-overlay-actions {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      display: flex;
+      gap: 8px;
+      z-index: 5;
+    }
+
+    .overlay-icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(10, 10, 10, 0.6);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      font-size: 1.15rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.15s, transform 0.1s, border-color 0.15s;
+    }
+
+    .overlay-icon-btn:active {
+      transform: scale(0.9);
+      background: rgba(0, 0, 0, 0.9);
+      border-color: var(--cream);
+    }
+
+    .overlay-icon-btn.delete {
+      border-color: rgba(231, 76, 60, 0.5);
     }
   </style>
 </head>
@@ -809,17 +830,7 @@
     <div class="modal-sheet">
       <div class="modal-header">
         <h3 class="modal-title" id="uploadModalTitle">📸 Tu Carpeta</h3>
-        <div class="modal-toolbar">
-          <button id="addPhotosBtn" class="toolbar-btn primary" onclick="document.getElementById('fileInput').click()" title="Agregar fotos o videos" style="display: none;">
-            <span>➕ Agregar</span>
-          </button>
-          <button id="refreshPhotosBtn" class="toolbar-btn" onclick="loadMyFiles()" title="Actualizar" style="display: none;">
-            <span>🔄</span>
-          </button>
-          <button class="toolbar-btn" onclick="closeModal('uploadModal')" title="Cerrar">
-            <span>✕</span>
-          </button>
-        </div>
+        <button class="close-btn-lg" onclick="closeModal('uploadModal')" title="Cerrar">✕</button>
       </div>
 
       <!-- PASO 1: Identificación rápida del invitado (Solo Nombre) -->
@@ -850,14 +861,16 @@
 
         <!-- Galería personal del invitado -->
         <div class="my-files-section">
-          <div class="my-files-header">
-            <span>Mis archivos (<span id="myFilesCount">0</span>)</span>
-          </div>
           <div id="myFilesLoading" style="font-size: 0.82rem; color: #aaa; text-align: center; padding: 12px; display: none;">
             Cargando tu carpeta...
           </div>
           <div id="myFilesGrid" class="gallery-grid"></div>
         </div>
+
+        <!-- Botón flotante en la esquina inferior derecha -->
+        <button id="fabAddPhotos" class="fab-add-btn" onclick="document.getElementById('fileInput').click()" title="Agregar fotos o videos">
+          +
+        </button>
       </div>
     </div>
   </div>
@@ -964,19 +977,16 @@
       const loginView = document.getElementById("guestLoginView");
       const folderView = document.getElementById("guestFolderView");
       const titleEl = document.getElementById("uploadModalTitle");
-      const addBtn = document.getElementById("addPhotosBtn");
-      const refreshBtn = document.getElementById("refreshPhotosBtn");
+      const fabBtn = document.getElementById("fabAddPhotos");
 
       if (!session) {
         if (titleEl) titleEl.textContent = "📸 Tu Carpeta";
-        if (addBtn) addBtn.style.display = "none";
-        if (refreshBtn) refreshBtn.style.display = "none";
+        if (fabBtn) fabBtn.style.display = "none";
         loginView.style.display = "block";
         folderView.style.display = "none";
       } else {
         if (titleEl) titleEl.textContent = "📸 Carpeta de " + session.name;
-        if (addBtn) addBtn.style.display = "inline-flex";
-        if (refreshBtn) refreshBtn.style.display = "inline-flex";
+        if (fabBtn) fabBtn.style.display = "flex";
         loginView.style.display = "none";
         folderView.style.display = "flex";
         loadMyFiles();
@@ -1037,22 +1047,19 @@
     async function loadMyFiles() {
       const loadingEl = document.getElementById("myFilesLoading");
       const gridEl = document.getElementById("myFilesGrid");
-      const countEl = document.getElementById("myFilesCount");
 
       loadingEl.style.display = "block";
       try {
         const data = await apiCall({ action: "listFiles" });
         const files = data.files || [];
-        countEl.textContent = files.length;
         gridEl.innerHTML = "";
 
         if (files.length === 0) {
           gridEl.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align:center; padding: 48px 16px; color:#aaa;">
-              <div style="font-size: 3rem; margin-bottom: 12px;">📸</div>
+            <div style="grid-column: 1 / -1; text-align:center; padding: 50px 16px; color:#aaa;">
+              <div style="font-size: 3.2rem; margin-bottom: 12px;">📸</div>
               <div style="font-size: 1.05rem; color: var(--cream); font-weight: 600; margin-bottom: 6px;">Todavía no hay fotos ni videos</div>
-              <div style="font-size: 0.82rem; margin-bottom: 20px;">Tocá en "➕ Agregar" para subir recuerdos del festejo.</div>
-              <button class="btn btn-green" onclick="document.getElementById('fileInput').click()">➕ Agregar fotos o videos</button>
+              <div style="font-size: 0.85rem; color: #888;">Tocá el botón verde <strong>+</strong> abajo a la derecha para subir recuerdos.</div>
             </div>
           `;
         } else {
@@ -1060,15 +1067,14 @@
             const card = document.createElement("div");
             card.className = "media-card";
             card.innerHTML = `
-              <a href="${f.viewUrl}" target="_blank" rel="noopener" class="media-thumb-wrap" title="Ver archivo">
-                <img src="${f.thumbUrl}" alt="${f.name}" class="media-thumb" loading="lazy" onerror="this.style.display='none'" />
-                <span class="media-badge">${f.isVideo ? "🎥 Video" : "📷 Foto"} · ${f.sizeMB}M</span>
-              </a>
-              <div class="media-info">
-                <div class="media-name" id="name-${f.id}" title="${f.name}">${f.name}</div>
-                <div class="media-actions">
-                  <button class="icon-btn" onclick="renameMyFile('${f.id}', '${f.name.replace(/'/g, "\\'")}')">✏️ Editar</button>
-                  <button class="icon-btn danger" onclick="deleteMyFile('${f.id}', '${f.name.replace(/'/g, "\\'")}')">🗑️ Borrar</button>
+              <div class="media-thumb-wrap">
+                <a href="${f.viewUrl}" target="_blank" rel="noopener" style="display:block; width:100%; height:100%;" title="Ver foto">
+                  <img src="${f.thumbUrl}" alt="Foto" class="media-thumb" loading="lazy" onerror="this.style.display='none'" />
+                </a>
+                ${f.isVideo ? '<span class="video-badge">🎥</span>' : ''}
+                <div class="card-overlay-actions">
+                  <button class="overlay-icon-btn" onclick="event.preventDefault(); event.stopPropagation(); renameMyFile('${f.id}', '${f.name.replace(/'/g, "\\'")}')" title="Renombrar">✏️</button>
+                  <button class="overlay-icon-btn delete" onclick="event.preventDefault(); event.stopPropagation(); deleteMyFile('${f.id}', '${f.name.replace(/'/g, "\\'")}')" title="Eliminar">🗑️</button>
                 </div>
               </div>
             `;
@@ -1077,7 +1083,7 @@
         }
       } catch (err) {
         console.error(err);
-        gridEl.innerHTML = `<div style="grid-column: 1 / -1; text-align:center; color:#e67e22; font-size:0.8rem;">${err.message}</div>`;
+        gridEl.innerHTML = `<div style="grid-column: 1 / -1; text-align:center; color:#e67e22; font-size:0.85rem; padding: 20px;">${err.message}</div>`;
       } finally {
         loadingEl.style.display = "none";
       }
