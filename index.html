@@ -520,58 +520,54 @@
       max-height: 100dvh;
       border-radius: 0;
       border-top: none;
-      padding: 16px 14px calc(16px + env(safe-area-inset-bottom, 0px));
+      padding: 0;
       display: flex;
       flex-direction: column;
       position: relative;
+      overflow: hidden;
     }
 
-    .close-btn-lg {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(223, 199, 156, 0.35);
-      color: var(--text-light);
-      width: 42px;
-      height: 42px;
+    /* Botones de acción flotando por arriba de las imágenes */
+    .modal-top-actions {
+      position: absolute;
+      top: calc(14px + env(safe-area-inset-top, 0px));
+      right: calc(14px + env(safe-area-inset-right, 0px));
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 60;
+    }
+
+    .circle-action-btn {
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
+      background: rgba(18, 18, 18, 0.75);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(223, 199, 156, 0.35);
+      color: var(--text-light);
       font-size: 1.35rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.15s, transform 0.1s;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.65);
+      transition: background 0.15s, transform 0.1s, border-color 0.15s;
     }
 
-    .close-btn-lg:active {
+    .circle-action-btn:active {
       transform: scale(0.92);
-      background: rgba(255, 255, 255, 0.18);
+      background: rgba(30, 30, 30, 0.95);
     }
 
-    /* Botón flotante redondo para agregar fotos */
-    .fab-add-btn {
-      position: fixed;
-      bottom: 24px;
-      right: 20px;
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--green), #00e699);
-      border: 2px solid rgba(223, 199, 156, 0.5);
-      color: #0a0a0a;
-      font-size: 2.3rem;
+    .circle-action-btn.add {
+      font-size: 1.85rem;
       font-weight: 300;
       line-height: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 18px rgba(0, 230, 153, 0.55), 0 0 14px rgba(135, 75, 158, 0.45);
-      cursor: pointer;
-      z-index: 50;
-      transition: transform 0.15s, box-shadow 0.2s;
-    }
-
-    .fab-add-btn:active {
-      transform: scale(0.92);
-      box-shadow: 0 2px 10px rgba(0, 230, 153, 0.4);
+      color: #00ffaa;
+      border-color: rgba(0, 255, 170, 0.55);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.65), 0 0 12px rgba(0, 255, 170, 0.35);
     }
 
     #guestFolderView {
@@ -580,15 +576,25 @@
       flex-direction: column;
       min-height: 0;
       position: relative;
+      padding: 0 12px;
+    }
+
+    .upload-feedback-box {
+      position: absolute;
+      top: calc(68px + env(safe-area-inset-top, 0px));
+      left: 14px;
+      right: 14px;
+      z-index: 55;
+      pointer-events: none;
     }
 
     .file-list {
-      margin: 4px 0 8px;
-      max-height: 130px;
+      max-height: 140px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 6px;
+      pointer-events: auto;
     }
 
     .file-item {
@@ -622,19 +628,19 @@
     }
 
     .status-msg {
-      margin-top: 4px;
+      margin-top: 6px;
       font-size: 0.84rem;
       text-align: center;
       min-height: 18px;
+      pointer-events: auto;
     }
 
-    /* Grilla de fotos con foco completo y sin estiramiento vertical */
+    /* Grilla de fotos ocupando desde arriba de todo */
     .my-files-section {
       flex: 1;
       display: flex;
       flex-direction: column;
       min-height: 0;
-      margin-top: 6px;
     }
 
     .gallery-grid {
@@ -645,7 +651,8 @@
       gap: 12px;
       align-content: start;
       align-items: start;
-      padding-bottom: 90px;
+      padding-top: calc(72px + env(safe-area-inset-top, 0px));
+      padding-bottom: 24px;
       -webkit-overflow-scrolling: touch;
     }
 
@@ -825,17 +832,18 @@
     </div>
   </div>
 
-  <!-- MODAL 2: SUBCARPETA PRIVADA DEL INVITADO (SUBIR, VER, EDITAR Y BORRAR LO PROPIO) -->
+  <!-- MODAL 2: SUBCARPETA PRIVADA DEL INVITADO (SUBIR, VER Y BORRAR LO PROPIO) -->
   <div class="modal-backdrop" id="uploadModal" onclick="closeOnBackdrop(event, 'uploadModal')">
     <div class="modal-sheet">
-      <div class="modal-header">
-        <h3 class="modal-title" id="uploadModalTitle">📸 Tu Carpeta</h3>
-        <button class="close-btn-lg" onclick="closeModal('uploadModal')" title="Cerrar">✕</button>
+      <!-- Botones superiores flotantes alineados: Agregar (+) y Cerrar (✕) -->
+      <div class="modal-top-actions">
+        <button id="topAddPhotosBtn" class="circle-action-btn add" onclick="document.getElementById('fileInput').click()" title="Agregar fotos o videos" style="display: none;">+</button>
+        <button class="circle-action-btn" onclick="closeModal('uploadModal')" title="Cerrar">✕</button>
       </div>
 
       <!-- PASO 1: Identificación rápida del invitado (Solo Nombre) -->
-      <div id="guestLoginView" style="margin: auto 0; text-align: center;">
-        <p style="font-size: 0.9rem; color: #ccc; margin-bottom: 14px;">
+      <div id="guestLoginView" style="margin: auto 0; padding: 24px 16px; text-align: center;">
+        <p style="font-size: 0.95rem; color: #ccc; margin-bottom: 16px;">
           Ingresá tu nombre para crear tu carpeta de fotos y videos para el cumple.
         </p>
         <input type="text" id="loginName" class="input-field" placeholder="Tu Nombre (ej: Rodri)" style="text-align: center;" />
@@ -844,7 +852,7 @@
         </button>
       </div>
 
-      <!-- PASO 2: Carpeta activa del invitado -->
+      <!-- PASO 2: Carpeta activa del invitado (las fotos ocupan desde arriba de todo) -->
       <div id="guestFolderView" style="display: none;">
         <input
           type="file"
@@ -855,22 +863,18 @@
           onchange="handleFileSelect(event)"
         />
 
-        <div id="fileList" class="file-list"></div>
-
-        <div id="uploadStatus" class="status-msg"></div>
+        <div class="upload-feedback-box">
+          <div id="fileList" class="file-list"></div>
+          <div id="uploadStatus" class="status-msg"></div>
+        </div>
 
         <!-- Galería personal del invitado -->
         <div class="my-files-section">
-          <div id="myFilesLoading" style="font-size: 0.82rem; color: #aaa; text-align: center; padding: 12px; display: none;">
+          <div id="myFilesLoading" style="font-size: 0.82rem; color: #aaa; text-align: center; padding: 80px 12px 12px; display: none;">
             Cargando tu carpeta...
           </div>
           <div id="myFilesGrid" class="gallery-grid"></div>
         </div>
-
-        <!-- Botón flotante en la esquina inferior derecha -->
-        <button id="fabAddPhotos" class="fab-add-btn" onclick="document.getElementById('fileInput').click()" title="Agregar fotos o videos">
-          +
-        </button>
       </div>
     </div>
   </div>
@@ -976,17 +980,14 @@
       const session = getGuestSession();
       const loginView = document.getElementById("guestLoginView");
       const folderView = document.getElementById("guestFolderView");
-      const titleEl = document.getElementById("uploadModalTitle");
-      const fabBtn = document.getElementById("fabAddPhotos");
+      const addBtn = document.getElementById("topAddPhotosBtn");
 
       if (!session) {
-        if (titleEl) titleEl.textContent = "📸 Tu Carpeta";
-        if (fabBtn) fabBtn.style.display = "none";
+        if (addBtn) addBtn.style.display = "none";
         loginView.style.display = "block";
         folderView.style.display = "none";
       } else {
-        if (titleEl) titleEl.textContent = "📸 Carpeta de " + session.name;
-        if (fabBtn) fabBtn.style.display = "flex";
+        if (addBtn) addBtn.style.display = "flex";
         loginView.style.display = "none";
         folderView.style.display = "flex";
         loadMyFiles();
@@ -1056,10 +1057,10 @@
 
         if (files.length === 0) {
           gridEl.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align:center; padding: 50px 16px; color:#aaa;">
+            <div style="grid-column: 1 / -1; text-align:center; padding: 100px 16px 40px; color:#aaa;">
               <div style="font-size: 3.2rem; margin-bottom: 12px;">📸</div>
               <div style="font-size: 1.05rem; color: var(--cream); font-weight: 600; margin-bottom: 6px;">Todavía no hay fotos ni videos</div>
-              <div style="font-size: 0.85rem; color: #888;">Tocá el botón verde <strong>+</strong> abajo a la derecha para subir recuerdos.</div>
+              <div style="font-size: 0.85rem; color: #888;">Tocá el botón <strong>+</strong> arriba a la derecha para subir recuerdos.</div>
             </div>
           `;
         } else {
@@ -1073,7 +1074,6 @@
                 </a>
                 ${f.isVideo ? '<span class="video-badge">🎥</span>' : ''}
                 <div class="card-overlay-actions">
-                  <button class="overlay-icon-btn" onclick="event.preventDefault(); event.stopPropagation(); renameMyFile('${f.id}', '${f.name.replace(/'/g, "\\'")}')" title="Renombrar">✏️</button>
                   <button class="overlay-icon-btn delete" onclick="event.preventDefault(); event.stopPropagation(); deleteMyFile('${f.id}', '${f.name.replace(/'/g, "\\'")}')" title="Eliminar">🗑️</button>
                 </div>
               </div>
@@ -1086,22 +1086,6 @@
         gridEl.innerHTML = `<div style="grid-column: 1 / -1; text-align:center; color:#e67e22; font-size:0.85rem; padding: 20px;">${err.message}</div>`;
       } finally {
         loadingEl.style.display = "none";
-      }
-    }
-
-    async function renameMyFile(fileId, currentName) {
-      const newName = prompt("Nuevo nombre para tu archivo:", currentName);
-      if (!newName || newName.trim() === currentName) return;
-
-      try {
-        await apiCall({
-          action: "renameFile",
-          fileId: fileId,
-          newName: newName.trim()
-        });
-        await loadMyFiles();
-      } catch (err) {
-        alert("No se pudo renombrar: " + err.message);
       }
     }
 
