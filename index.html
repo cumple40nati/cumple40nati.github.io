@@ -359,10 +359,10 @@
       margin: 0 auto;
       background: rgba(18, 18, 18, 0.98);
       border-top: 1px solid rgba(223, 199, 156, 0.25);
-      padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
+      padding: 8px 6px calc(8px + env(safe-area-inset-bottom, 0px));
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
       z-index: 40;
     }
 
@@ -375,12 +375,13 @@
       align-items: center;
       justify-content: center;
       gap: 4px;
-      padding: 8px 4px;
-      border-radius: 14px;
-      font-size: 0.72rem;
+      padding: 6px 2px;
+      border-radius: 12px;
+      font-size: 0.68rem;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.15s, transform 0.1s;
+      white-space: nowrap;
     }
 
     .dock-btn:active {
@@ -391,6 +392,10 @@
     .dock-icon {
       font-size: 1.25rem;
       line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 22px;
     }
 
     /* Modales */
@@ -943,6 +948,14 @@
       <span class="dock-icon">📍</span>
       <span>Ubicación</span>
     </button>
+    <button class="dock-btn" onclick="openSpotify()" title="Elegí música en Spotify">
+      <span class="dock-icon">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="#1DB954" style="display:block;">
+          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.494 17.307a.75.75 0 0 1-1.03.248c-2.822-1.724-6.374-2.114-10.558-1.158a.75.75 0 1 1-.336-1.462c4.582-1.047 8.52-.596 11.676 1.342a.75.75 0 0 1 .248 1.03zm1.467-3.262a.938.938 0 0 1-1.288.31c-3.23-1.986-8.155-2.56-11.977-1.4a.938.938 0 0 1-.548-1.794c4.372-1.33 9.8-.684 13.503 1.596a.938.938 0 0 1 .31 1.288zm.126-3.41c-3.873-2.3-10.264-2.512-13.978-1.385a1.125 1.125 0 0 1-.652-2.155c4.267-1.296 11.332-1.042 15.795 1.608a1.125 1.125 0 1 1-1.165 1.932z"/>
+        </svg>
+      </span>
+      <span>Spotify</span>
+    </button>
     <button class="dock-btn" onclick="confirmarWhatsApp()">
       <span class="dock-icon">💬</span>
       <span>Confirmar</span>
@@ -1079,7 +1092,9 @@
       APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbxjKStqipxdD_Sx5W6G6jkCteqjyhCmX9wKGq0_BKKbe_uuPS_k9JwLo7jclhroaiJX/exec",
       // Número de WhatsApp para confirmar asistencia (formato internacional sin +)
       WHATSAPP_NUMBER: "5491161019296",
-      WHATSAPP_TEXT: "¡Hola Nati! Confirmo mi asistencia a tus 40 🎉🥂"
+      WHATSAPP_TEXT: "¡Hola Nati! Confirmo mi asistencia a tus 40 🎉🥂",
+      // Playlist colaborativa de Spotify
+      SPOTIFY_URL: "https://open.spotify.com/playlist/3AP6rJg4JA84VC6fUQmr3E?si=QyQJeHVhTLmU9vJpiGR6GQ&utm_source=whatsapp&pt=5ace4da3010be116f8279eda5dbf207c&pi=AP7vNbwgT2GPy"
     };
 
     const STORAGE_KEY = "cumple40Nati_guest";
@@ -1099,6 +1114,10 @@
     function openUploadModal() {
       openModal("uploadModal");
       renderGuestSession();
+    }
+
+    function openSpotify() {
+      window.open(CONFIG.SPOTIFY_URL, "_blank", "noopener");
     }
 
     function openLightbox(imgSrc) {
