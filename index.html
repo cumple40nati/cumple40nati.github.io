@@ -556,6 +556,8 @@
       padding: 8px 10px;
       border-radius: 8px;
       font-size: 0.8rem;
+      overflow: hidden;
+      transition: opacity 0.35s ease, max-height 0.35s ease, padding 0.35s ease, margin 0.35s ease;
     }
 
     .file-item-header {
@@ -775,29 +777,23 @@
   <div class="modal-backdrop" id="uploadModal" onclick="closeOnBackdrop(event, 'uploadModal')">
     <div class="modal-sheet">
       <div class="modal-header">
-        <h3 class="modal-title">📸 Tu Carpeta del Cumple</h3>
+        <h3 class="modal-title" id="uploadModalTitle">📸 Tu Carpeta del Cumple</h3>
         <button class="close-btn" onclick="closeModal('uploadModal')">✕</button>
       </div>
 
-      <!-- PASO 1: Identificación rápida del invitado (Nombre + PIN) -->
+      <!-- PASO 1: Identificación rápida del invitado (Solo Nombre) -->
       <div id="guestLoginView">
         <p style="font-size: 0.86rem; color: #ccc; margin-bottom: 12px;">
-          Ingresá tu nombre y un PIN de 4 números. Se creará <strong>tu propia carpeta privada</strong> para que puedas subir fotos/videos y ver, editar o borrar solo lo que vos subas.
+          Ingresá tu nombre para crear tu carpeta de fotos y videos para el cumple.
         </p>
-        <input type="text" id="loginName" class="input-field" placeholder="Tu Nombre y Apellido (ej: Juan Perez)" />
-        <input type="password" inputmode="numeric" maxlength="8" id="loginPin" class="input-field" placeholder="Elegí un PIN de 4 dígitos (ej: 1234)" />
+        <input type="text" id="loginName" class="input-field" placeholder="Tu Nombre (ej: Rodri)" />
         <button class="btn btn-green" style="width: 100%;" onclick="saveGuestSession()">
-          🔓 Entrar a mi carpeta
+          Entrar
         </button>
       </div>
 
       <!-- PASO 2: Carpeta activa del invitado -->
       <div id="guestFolderView" style="display: none;">
-        <div class="guest-bar">
-          <span>📂 Carpeta de <strong id="activeGuestName" style="color: var(--cream);"></strong></span>
-          <button class="link-btn" onclick="logoutGuest()">Cambiar usuario</button>
-        </div>
-
         <input
           type="file"
           id="fileInput"
@@ -814,10 +810,6 @@
         </div>
 
         <div id="fileList" class="file-list"></div>
-
-        <button id="uploadBtn" class="btn btn-green" style="width: 100%; display: none;" onclick="startUpload()">
-          ⬆️ Subir a mi carpeta
-        </button>
 
         <div id="uploadStatus" class="status-msg"></div>
 
@@ -904,19 +896,25 @@
       }
     }
 
+    function generateUUID() {
+      if (typeof crypto !== "undefined" && crypto.randomUUID) {
+        return crypto.randomUUID();
+      }
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
     function saveGuestSession() {
       const name = document.getElementById("loginName").value.trim();
-      const pin = document.getElementById("loginPin").value.trim();
 
       if (name.length < 2) {
         alert("Por favor ingresá tu nombre.");
         return;
       }
-      if (pin.length < 3) {
-        alert("Por favor ingresá un PIN de al menos 3 o 4 dígitos para proteger tu carpeta.");
-        return;
-      }
 
+      const pin = generateUUID();
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ name, pin }));
       renderGuestSession();
     }
@@ -931,14 +929,16 @@
       const session = getGuestSession();
       const loginView = document.getElementById("guestLoginView");
       const folderView = document.getElementById("guestFolderView");
+      const titleEl = document.getElementById("uploadModalTitle");
 
       if (!session) {
+        if (titleEl) titleEl.textContent = "📸 Tu Carpeta del Cumple";
         loginView.style.display = "block";
         folderView.style.display = "none";
       } else {
+        if (titleEl) titleEl.textContent = "📸 Carpeta de " + session.name;
         loginView.style.display = "none";
         folderView.style.display = "block";
-        document.getElementById("activeGuestName").textContent = session.name;
         loadMyFiles();
       }
     }
@@ -1069,11 +1069,11 @@
     const MAX_FILE_SIZE_MB = 100;
     const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
-    // Selección y subida de archivos
+    // Selección y subida automática de archivos
     function handleFileSelect(event) {
       const allFiles = Array.from(event.target.files);
+      event.target.value = "";
       const listEl = document.getElementById("fileList");
-      const btnEl = document.getElementById("uploadBtn");
       const statusEl = document.getElementById("uploadStatus");
 
       listEl.innerHTML = "";
@@ -1089,7 +1089,6 @@
       }
 
       if (selectedFiles.length === 0) {
-        btnEl.style.display = "none";
         return;
       }
 
@@ -1097,10 +1096,11 @@
         const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
         const item = document.createElement("div");
         item.className = "file-item";
+        item.id = `file-item-${idx}`;
         item.innerHTML = `
           <div class="file-item-header">
             <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:70%;">${file.name}</span>
-            <span id="status-${idx}">${sizeMB} MB</span>
+            <span id="status-${idx}">0% (${sizeMB} MB)</span>
           </div>
           <div class="progress-bar">
             <div class="progress-fill" id="prog-${idx}"></div>
@@ -1109,16 +1109,15 @@
         listEl.appendChild(item);
       });
 
-      btnEl.style.display = "inline-flex";
+      // Se carga directamente sin necesidad de apretar otro botón
+      startUpload();
     }
 
     async function startUpload() {
-      const btnEl = document.getElementById("uploadBtn");
       const statusEl = document.getElementById("uploadStatus");
 
-      btnEl.disabled = true;
       statusEl.style.color = "var(--cream)";
-      statusEl.textContent = "Subiendo a tu carpeta, no cierres esta ventana...";
+      statusEl.textContent = "Subiendo archivo(s)...";
 
       let okCount = 0;
 
@@ -1126,32 +1125,53 @@
         const file = selectedFiles[i];
         const progEl = document.getElementById(`prog-${i}`);
         const itemStatusEl = document.getElementById(`status-${i}`);
+        const itemEl = document.getElementById(`file-item-${i}`);
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+
+        const updateProgress = (pct) => {
+          if (progEl) progEl.style.width = `${pct}%`;
+          if (itemStatusEl) itemStatusEl.textContent = `${pct}% (${sizeMB} MB)`;
+        };
 
         try {
-          itemStatusEl.textContent = "Subiendo...";
+          updateProgress(5);
           if (file.size <= 20 * 1024 * 1024) {
-            await uploadBase64(file, progEl);
+            await uploadBase64(file, updateProgress);
           } else {
-            await uploadResumable(file, progEl);
+            await uploadResumable(file, updateProgress);
           }
-          progEl.style.width = "100%";
-          itemStatusEl.textContent = "✅ Subido";
+          updateProgress(100);
           okCount++;
+
+          // Al terminar de cargar, desaparece suavemente la barrita de carga
+          if (itemEl) {
+            setTimeout(() => {
+              itemEl.style.opacity = "0";
+              itemEl.style.maxHeight = "0";
+              itemEl.style.padding = "0 10px";
+              itemEl.style.margin = "0";
+              setTimeout(() => {
+                if (itemEl.parentNode) itemEl.parentNode.removeChild(itemEl);
+              }, 400);
+            }, 600);
+          }
         } catch (err) {
           console.error(err);
-          itemStatusEl.textContent = "❌ Error";
-          progEl.style.background = "#e74c3c";
+          if (itemStatusEl) itemStatusEl.textContent = "❌ Error";
+          if (progEl) progEl.style.background = "#e74c3c";
         }
       }
 
-      btnEl.disabled = false;
-      if (okCount === selectedFiles.length) {
+      if (okCount === selectedFiles.length && okCount > 0) {
         statusEl.style.color = "#2ecc71";
         statusEl.textContent = `¡Listo! Se subieron ${okCount} archivo(s) a tu carpeta 🎉`;
-        btnEl.style.display = "none";
-        document.getElementById("fileList").innerHTML = "";
+        setTimeout(() => {
+          if (statusEl.textContent.includes("¡Listo!")) {
+            statusEl.textContent = "";
+          }
+        }, 3500);
         selectedFiles = [];
-      } else {
+      } else if (okCount > 0) {
         statusEl.style.color = "#f39c12";
         statusEl.textContent = `Se subieron ${okCount} de ${selectedFiles.length} archivos.`;
       }
@@ -1164,7 +1184,7 @@
         const reader = new FileReader();
         reader.onprogress = (e) => {
           if (e.lengthComputable && onProgress) {
-            onProgress(Math.round((e.loaded / e.total) * 40));
+            onProgress(Math.round((e.loaded / e.total) * 45));
           }
         };
         reader.onload = () => resolve(reader.result.split(",")[1]);
@@ -1173,11 +1193,9 @@
       });
     }
 
-    async function uploadBase64(file, progEl) {
-      const base64Data = await fileToBase64(file, (p) => {
-        progEl.style.width = `${p}%`;
-      });
-      progEl.style.width = "65%";
+    async function uploadBase64(file, onProgress) {
+      const base64Data = await fileToBase64(file, onProgress);
+      if (onProgress) onProgress(65);
 
       await apiCall({
         action: "uploadBase64",
@@ -1185,9 +1203,10 @@
         mimeType: file.type || "application/octet-stream",
         data: base64Data
       });
+      if (onProgress) onProgress(100);
     }
 
-    async function uploadResumable(file, progEl) {
+    async function uploadResumable(file, onProgress) {
       const initData = await apiCall({
         action: "initResumable",
         fileName: file.name,
@@ -1201,8 +1220,9 @@
         xhr.open("PUT", initData.uploadUrl, true);
         xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
         xhr.upload.onprogress = (e) => {
-          if (e.lengthComputable) {
-            progEl.style.width = `${Math.round((e.loaded / e.total) * 100)}%`;
+          if (e.lengthComputable && onProgress) {
+            const pct = Math.round((e.loaded / e.total) * 100);
+            onProgress(pct);
           }
         };
         xhr.onload = () => {
