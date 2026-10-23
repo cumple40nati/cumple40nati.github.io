@@ -579,60 +579,54 @@
       padding: 0 12px;
     }
 
-    .upload-feedback-box {
+    /* Indicador de Pull To Refresh */
+    .pull-to-refresh {
       position: absolute;
-      top: calc(68px + env(safe-area-inset-top, 0px));
-      left: 14px;
-      right: 14px;
-      z-index: 55;
+      top: calc(56px + env(safe-area-inset-top, 0px));
+      left: 0;
+      right: 0;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       pointer-events: none;
+      z-index: 40;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: opacity 0.2s, transform 0.2s;
     }
 
-    .file-list {
-      max-height: 140px;
-      overflow-y: auto;
+    .pull-to-refresh.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .ptr-spinner {
+      width: 24px;
+      height: 24px;
       display: flex;
-      flex-direction: column;
-      gap: 6px;
-      pointer-events: auto;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      color: #00ffaa;
+      transition: transform 0.2s ease;
     }
 
-    .file-item {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 8px 10px;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      overflow: hidden;
-      transition: opacity 0.35s ease, max-height 0.35s ease, padding 0.35s ease, margin 0.35s ease;
+    .ptr-spinner.spinning {
+      border: 2.5px solid rgba(255, 255, 255, 0.15);
+      border-top-color: #00ffaa;
+      border-radius: 50%;
+      animation: spinLoader 0.75s linear infinite;
+      font-size: 0;
+      color: transparent;
     }
 
-    .file-item-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 4px;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 6px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--purple), var(--green));
-      transition: width 0.2s;
-    }
-
-    .status-msg {
-      margin-top: 6px;
-      font-size: 0.84rem;
-      text-align: center;
-      min-height: 18px;
-      pointer-events: auto;
+    .ptr-text {
+      font-size: 0.78rem;
+      color: var(--cream);
+      font-weight: 600;
+      letter-spacing: 0.3px;
     }
 
     /* Grilla de fotos ocupando desde arriba de todo */
@@ -641,24 +635,26 @@
       display: flex;
       flex-direction: column;
       min-height: 0;
+      position: relative;
     }
 
     .gallery-grid {
       flex: 1;
       overflow-y: auto;
+      overscroll-behavior-y: contain;
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 12px;
-      align-content: start;
-      align-items: start;
       padding-top: calc(72px + env(safe-area-inset-top, 0px));
       padding-bottom: 24px;
       -webkit-overflow-scrolling: touch;
     }
 
-    /* Tarjeta de foto con Glow Neon */
+    /* Tarjeta de foto con Glow Neon y relación de aspecto cuadrada fija */
     .media-card {
       position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
       background: #141414;
       border: 1.5px solid rgba(0, 230, 153, 0.4);
       border-radius: 14px;
@@ -673,15 +669,70 @@
       border-color: rgba(0, 230, 153, 0.8);
     }
 
+    /* Tarjeta de carga neon integrada en la grilla */
+    .media-card.uploading-card {
+      border: 1.5px dashed rgba(0, 230, 153, 0.7);
+      animation: pulseUploadBorder 1.8s infinite alternate ease-in-out;
+      background: radial-gradient(circle, rgba(135, 75, 158, 0.25) 0%, rgba(15, 15, 15, 0.95) 80%);
+    }
+
+    @keyframes pulseUploadBorder {
+      0% { border-color: rgba(0, 230, 153, 0.4); box-shadow: 0 0 10px rgba(0, 230, 153, 0.2); }
+      100% { border-color: rgba(184, 51, 255, 0.85); box-shadow: 0 0 20px rgba(184, 51, 255, 0.45); }
+    }
+
+    .upload-loading-wrap {
+      flex-direction: column;
+      gap: 10px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .neon-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3.5px solid rgba(255, 255, 255, 0.1);
+      border-top-color: #00ffaa;
+      border-right-color: #b833ff;
+      border-radius: 50%;
+      animation: spinLoader 0.9s linear infinite;
+      filter: drop-shadow(0 0 6px #00ffaa);
+    }
+
+    @keyframes spinLoader {
+      to { transform: rotate(360deg); }
+    }
+
+    .upload-pct-label {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--cream);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .upload-sub-label {
+      font-size: 0.72rem;
+      color: #00ffaa;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
     .media-thumb-wrap {
       position: relative;
       width: 100%;
-      aspect-ratio: 1 / 1;
+      height: 100%;
       background: #1a1a1a;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
+    }
+
+    .media-thumb-wrap a {
+      display: block;
+      width: 100%;
+      height: 100%;
     }
 
     .media-thumb {
@@ -863,13 +914,14 @@
           onchange="handleFileSelect(event)"
         />
 
-        <div class="upload-feedback-box">
-          <div id="fileList" class="file-list"></div>
-          <div id="uploadStatus" class="status-msg"></div>
-        </div>
-
         <!-- Galería personal del invitado -->
         <div class="my-files-section">
+          <!-- Indicador visual de Pull-to-refresh -->
+          <div class="pull-to-refresh" id="ptrIndicator">
+            <div class="ptr-spinner" id="ptrIcon">↓</div>
+            <span class="ptr-text" id="ptrText">Deslizá para actualizar</span>
+          </div>
+
           <div id="myFilesLoading" style="font-size: 0.82rem; color: #aaa; text-align: center; padding: 80px 12px 12px; display: none;">
             Cargando tu carpeta...
           </div>
@@ -990,6 +1042,7 @@
         if (addBtn) addBtn.style.display = "flex";
         loginView.style.display = "none";
         folderView.style.display = "flex";
+        setupPullToRefresh();
         loadMyFiles();
       }
     }
@@ -1044,12 +1097,96 @@
       return data;
     }
 
+    // Pull to Refresh en la galería
+    let ptrInitialized = false;
+    let ptrStartY = 0;
+    let isPulling = false;
+    let isRefreshing = false;
+
+    function setupPullToRefresh() {
+      if (ptrInitialized) return;
+      const grid = document.getElementById("myFilesGrid");
+      const ptr = document.getElementById("ptrIndicator");
+      const ptrIcon = document.getElementById("ptrIcon");
+      const ptrText = document.getElementById("ptrText");
+
+      if (!grid || !ptr) return;
+      ptrInitialized = true;
+
+      grid.addEventListener("touchstart", (e) => {
+        if (grid.scrollTop <= 0 && !isRefreshing) {
+          ptrStartY = e.touches[0].clientY;
+          isPulling = true;
+        } else {
+          isPulling = false;
+        }
+      }, { passive: true });
+
+      grid.addEventListener("touchmove", (e) => {
+        if (!isPulling || isRefreshing) return;
+        const currentY = e.touches[0].clientY;
+        const diff = currentY - ptrStartY;
+
+        if (diff > 0 && grid.scrollTop <= 0) {
+          ptr.classList.add("visible");
+          const pullDist = Math.min(diff * 0.45, 75);
+          ptr.style.transform = `translateY(${pullDist - 25}px)`;
+
+          if (pullDist >= 55) {
+            ptrText.textContent = "Soltá para actualizar";
+            ptrIcon.style.transform = "rotate(180deg)";
+          } else {
+            ptrText.textContent = "Deslizá para actualizar";
+            ptrIcon.style.transform = "rotate(0deg)";
+          }
+        } else {
+          ptr.classList.remove("visible");
+          ptr.style.transform = "translateY(-20px)";
+        }
+      }, { passive: true });
+
+      grid.addEventListener("touchend", async (e) => {
+        if (!isPulling || isRefreshing) return;
+        isPulling = false;
+
+        const currentY = e.changedTouches[0].clientY;
+        const diff = currentY - ptrStartY;
+        const pullDist = diff * 0.45;
+
+        if (diff > 0 && pullDist >= 55 && grid.scrollTop <= 0) {
+          isRefreshing = true;
+          ptr.classList.add("visible");
+          ptr.style.transform = "translateY(16px)";
+          ptrIcon.classList.add("spinning");
+          ptrIcon.style.transform = "none";
+          ptrText.textContent = "Actualizando...";
+
+          try {
+            await loadMyFiles();
+          } finally {
+            setTimeout(() => {
+              ptr.classList.remove("visible");
+              ptr.style.transform = "translateY(-20px)";
+              ptrIcon.classList.remove("spinning");
+              isRefreshing = false;
+            }, 500);
+          }
+        } else {
+          ptr.classList.remove("visible");
+          ptr.style.transform = "translateY(-20px)";
+        }
+      }, { passive: true });
+    }
+
     // Listar únicamente los archivos de la subcarpeta del invitado
     async function loadMyFiles() {
       const loadingEl = document.getElementById("myFilesLoading");
       const gridEl = document.getElementById("myFilesGrid");
 
-      loadingEl.style.display = "block";
+      if (!gridEl.children.length) {
+        loadingEl.style.display = "block";
+      }
+
       try {
         const data = await apiCall({ action: "listFiles" });
         const files = data.files || [];
@@ -1057,7 +1194,7 @@
 
         if (files.length === 0) {
           gridEl.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align:center; padding: 100px 16px 40px; color:#aaa;">
+            <div class="empty-gallery-msg" style="grid-column: 1 / -1; text-align:center; padding: 100px 16px 40px; color:#aaa;">
               <div style="font-size: 3.2rem; margin-bottom: 12px;">📸</div>
               <div style="font-size: 1.05rem; color: var(--cream); font-weight: 600; margin-bottom: 6px;">Todavía no hay fotos ni videos</div>
               <div style="font-size: 0.85rem; color: #888;">Tocá el botón <strong>+</strong> arriba a la derecha para subir recuerdos.</div>
@@ -1069,8 +1206,8 @@
             card.className = "media-card";
             card.innerHTML = `
               <div class="media-thumb-wrap">
-                <a href="${f.viewUrl}" target="_blank" rel="noopener" style="display:block; width:100%; height:100%;" title="Ver foto">
-                  <img src="${f.thumbUrl}" alt="Foto" class="media-thumb" loading="lazy" onerror="this.style.display='none'" />
+                <a href="${f.viewUrl}" target="_blank" rel="noopener" title="Ver foto">
+                  <img src="${f.thumbUrl}" alt="Foto" class="media-thumb" onerror="this.style.display='none'" />
                 </a>
                 ${f.isVideo ? '<span class="video-badge">🎥</span>' : ''}
                 <div class="card-overlay-actions">
@@ -1106,68 +1243,55 @@
     const MAX_FILE_SIZE_MB = 100;
     const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
-    // Selección y subida automática de archivos
+    // Selección y subida automática de archivos con tarjeta integrada en la grilla
     function handleFileSelect(event) {
       const allFiles = Array.from(event.target.files);
       event.target.value = "";
-      const listEl = document.getElementById("fileList");
-      const statusEl = document.getElementById("uploadStatus");
-
-      listEl.innerHTML = "";
-      statusEl.innerHTML = "";
+      const gridEl = document.getElementById("myFilesGrid");
 
       const oversized = allFiles.filter((f) => f.size > MAX_FILE_SIZE_BYTES);
       selectedFiles = allFiles.filter((f) => f.size <= MAX_FILE_SIZE_BYTES);
 
       if (oversized.length > 0) {
         const names = oversized.map((f) => `${f.name} (${(f.size / (1024 * 1024)).toFixed(1)} MB)`).join(", ");
-        statusEl.style.color = "#e74c3c";
-        statusEl.textContent = `⚠️ Se omitieron por superar los ${MAX_FILE_SIZE_MB} MB: ${names}`;
+        alert(`⚠️ Omitidos por superar ${MAX_FILE_SIZE_MB} MB: ${names}`);
       }
 
-      if (selectedFiles.length === 0) {
-        return;
-      }
+      if (selectedFiles.length === 0) return;
 
+      // Quitar mensaje de galería vacía si estaba
+      const emptyMsg = gridEl.querySelector(".empty-gallery-msg");
+      if (emptyMsg) gridEl.innerHTML = "";
+
+      // Crear tarjeta de carga individual por cada foto en la grilla
       selectedFiles.forEach((file, idx) => {
-        const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
-        const item = document.createElement("div");
-        item.className = "file-item";
-        item.id = `file-item-${idx}`;
-        item.innerHTML = `
-          <div class="file-item-header">
-            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:70%;">${file.name}</span>
-            <span id="status-${idx}">0% (${sizeMB} MB)</span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" id="prog-${idx}"></div>
+        const card = document.createElement("div");
+        card.className = "media-card uploading-card";
+        card.id = `upload-card-${idx}`;
+        card.innerHTML = `
+          <div class="media-thumb-wrap upload-loading-wrap">
+            <div class="neon-spinner"></div>
+            <div class="upload-pct-label" id="upload-pct-${idx}">0%</div>
+            <div class="upload-sub-label" id="upload-sub-${idx}">Subiendo</div>
           </div>
         `;
-        listEl.appendChild(item);
+        gridEl.prepend(card);
       });
 
-      // Se carga directamente sin necesidad de apretar otro botón
       startUpload();
     }
 
     async function startUpload() {
-      const statusEl = document.getElementById("uploadStatus");
-
-      statusEl.style.color = "var(--cream)";
-      statusEl.textContent = "Subiendo archivo(s)...";
-
       let okCount = 0;
 
       for (let i = 0; i < selectedFiles.length; i++) {
         const file = selectedFiles[i];
-        const progEl = document.getElementById(`prog-${i}`);
-        const itemStatusEl = document.getElementById(`status-${i}`);
-        const itemEl = document.getElementById(`file-item-${i}`);
-        const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+        const cardEl = document.getElementById(`upload-card-${i}`);
+        const pctEl = document.getElementById(`upload-pct-${i}`);
+        const subEl = document.getElementById(`upload-sub-${i}`);
 
         const updateProgress = (pct) => {
-          if (progEl) progEl.style.width = `${pct}%`;
-          if (itemStatusEl) itemStatusEl.textContent = `${pct}% (${sizeMB} MB)`;
+          if (pctEl) pctEl.textContent = `${pct}%`;
         };
 
         try {
@@ -1178,41 +1302,26 @@
             await uploadResumable(file, updateProgress);
           }
           updateProgress(100);
-          okCount++;
-
-          // Al terminar de cargar, desaparece suavemente la barrita de carga
-          if (itemEl) {
-            setTimeout(() => {
-              itemEl.style.opacity = "0";
-              itemEl.style.maxHeight = "0";
-              itemEl.style.padding = "0 10px";
-              itemEl.style.margin = "0";
-              setTimeout(() => {
-                if (itemEl.parentNode) itemEl.parentNode.removeChild(itemEl);
-              }, 400);
-            }, 600);
+          if (subEl) {
+            subEl.textContent = "¡Listo!";
+            subEl.style.color = "#00ffaa";
           }
+          okCount++;
         } catch (err) {
           console.error(err);
-          if (itemStatusEl) itemStatusEl.textContent = "❌ Error";
-          if (progEl) progEl.style.background = "#e74c3c";
+          if (pctEl) pctEl.textContent = "❌";
+          if (subEl) {
+            subEl.textContent = "Error";
+            subEl.style.color = "#e74c3c";
+          }
+          if (cardEl) {
+            cardEl.style.borderColor = "#e74c3c";
+            cardEl.style.animation = "none";
+          }
         }
       }
 
-      if (okCount === selectedFiles.length && okCount > 0) {
-        statusEl.style.color = "#2ecc71";
-        statusEl.textContent = `¡Listo! Se subieron ${okCount} archivo(s) a tu carpeta 🎉`;
-        setTimeout(() => {
-          if (statusEl.textContent.includes("¡Listo!")) {
-            statusEl.textContent = "";
-          }
-        }, 3500);
-        selectedFiles = [];
-      } else if (okCount > 0) {
-        statusEl.style.color = "#f39c12";
-        statusEl.textContent = `Se subieron ${okCount} de ${selectedFiles.length} archivos.`;
-      }
-
+      selectedFiles = [];
       await loadMyFiles();
     }
 
